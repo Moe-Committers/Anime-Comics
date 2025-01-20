@@ -30,7 +30,7 @@ public class UpdateBookCommandHandler : IRequestHandler<UpdateBookCommand, bool>
         book.Description = request.Description;
         book.Author = request.Author;
         book.ImageUrl = request.ImageUrl;
-        book.UpdatedAt = DateTime.Now;
+        book.UpdatedAt = DateTime.UtcNow;
 
         var categories = await _db.categories
             .Where(c => request.CategoryIds.Contains(c.Id))

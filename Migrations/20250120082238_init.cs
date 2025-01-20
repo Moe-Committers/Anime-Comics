@@ -7,13 +7,13 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace anime_comics.Migrations
 {
     /// <inheritdoc />
-    public partial class update1 : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Categories",
+                name: "categories",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -22,7 +22,7 @@ namespace anime_comics.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.PrimaryKey("PK_categories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -115,16 +115,16 @@ namespace anime_comics.Migrations
                 {
                     table.PrimaryKey("PK_BooksCategories", x => new { x.Booksid, x.CategoriesId });
                     table.ForeignKey(
-                        name: "FK_BooksCategories_Categories_CategoriesId",
-                        column: x => x.CategoriesId,
-                        principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_BooksCategories_books_Booksid",
                         column: x => x.Booksid,
                         principalTable: "books",
                         principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BooksCategories_categories_CategoriesId",
+                        column: x => x.CategoriesId,
+                        principalTable: "categories",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -272,7 +272,7 @@ namespace anime_comics.Migrations
                 name: "refreshTokens");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "categories");
 
             migrationBuilder.DropTable(
                 name: "books");

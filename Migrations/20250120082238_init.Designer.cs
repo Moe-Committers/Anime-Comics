@@ -12,8 +12,8 @@ using anime_comics.DB;
 namespace anime_comics.Migrations
 {
     [DbContext(typeof(database))]
-    [Migration("20250119110242_update1")]
-    partial class update1
+    [Migration("20250120082238_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -103,7 +103,7 @@ namespace anime_comics.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("categories");
                 });
 
             modelBuilder.Entity("anime_comics.Models.Comments", b =>

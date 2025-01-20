@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_db
+    environment: 
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: renko12345
+      POSTGRES_DB: AnimComicDb 
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - mynetwork
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  mynetwork:
+    driver: bridge

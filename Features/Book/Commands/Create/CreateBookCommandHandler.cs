@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using anime_comics.DB;
 using anime_comics.Models;
+using anime_comics.Utils.Helpers.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,11 @@ public class CreateBookCommandHandler : IRequestHandler<CreateBookCommand, long>
 
     public async Task<long> Handle(CreateBookCommand request, CancellationToken ct)
     {
-        var userId = long.Parse(_httpContext.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var userId = long.Parse(_httpContext.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+        
+        var user = await _db.users.FindAsync(userId);
+        if (user == null)
+            throw new NotFoundExceptions("User not found");
 
         var categories = await _db.categories
             .Where(c => request.CategoryIds.Contains(c.Id))
@@ -32,8 +37,9 @@ public class CreateBookCommandHandler : IRequestHandler<CreateBookCommand, long>
             Author = request.Author,
             ImageUrl = request.ImageUrl,
             UserId = userId,
+            Users = user,
             Categories = categories,
-            CreatedAt = DateTime.Now
+            CreatedAt = DateTime.UtcNow
         };
 
         _db.books.Add(book);

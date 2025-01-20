@@ -1,8 +1,10 @@
+using System.Security.Claims;
 using anime_comics.Features.Book.Commands.Create;
 using anime_comics.Features.Book.Commands.Delete;
 using anime_comics.Features.Book.Commands.Update;
 using anime_comics.Features.Book.Queries.GetBook;
 using anime_comics.Features.Book.Queries.GetBooks;
+using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Books;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +22,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<BookDto>>> GetBooks([FromQuery] GetBooksQuery query)
+    public async Task<ActionResult<PageResponse<BookDto>>> GetBooks([FromQuery] GetBooksQuery query)
     {
         var books = await _mediator.Send(query);
         return Ok(books);
