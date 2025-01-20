@@ -1,3 +1,5 @@
+using anime_comics.Utils.Enum;
+
 namespace anime_comics.Models;
 
 public class Users : BaseEntity {
@@ -12,6 +14,8 @@ public class Users : BaseEntity {
     public string Profile {get; set;}
     public string Email {get; set;}
     public string Password {get; set;}
+    public DateTime? LastLogin {get; set;}
+    public UserStatus status {get; set;}
     public virtual ICollection<Books> Books {get; set;}
     public virtual ICollection<Comments> Comments {get; set;}
     public virtual ICollection<Favourites> Favourites {get; set;}

@@ -11,6 +11,7 @@ public class Books : BaseEntity
     }
 
     public string Title { get; set; }
+    public string Description { get; set; }
     public string Author { get; set; }
     public int Fav { get; set; }
     public string ImageUrl { get; set; }
