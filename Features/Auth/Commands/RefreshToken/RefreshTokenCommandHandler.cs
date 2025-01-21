@@ -44,7 +44,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
 
         var newRefreshToken = new RefreshTokens
         {
-            UserId = token.User.id,
+            UserId = token.User.Id,
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
             ExpireAt = DateTime.UtcNow.AddDays(10),
             CreatedAt = DateTime.UtcNow,
@@ -70,8 +70,10 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>{
-            new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email)
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role , user.role.ToString()),
+            new Claim("status" , user.status.ToString())
         };
 
         var token = new JwtSecurityToken(

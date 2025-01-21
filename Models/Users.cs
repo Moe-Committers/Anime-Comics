@@ -15,7 +15,8 @@ public class Users : BaseEntity {
     public string Email {get; set;}
     public string Password {get; set;}
     public DateTime? LastLogin {get; set;}
-    public UserStatus status {get; set;}
+    public Status status {get; set;}
+    public Role role {get; set;}
     public virtual ICollection<Books> Books {get; set;}
     public virtual ICollection<Comments> Comments {get; set;}
     public virtual ICollection<Favourites> Favourites {get; set;}

@@ -3,7 +3,11 @@ using anime_comics.Features.Auth.Commands.Logout;
 using anime_comics.Features.Auth.Commands.RefreshToken;
 using anime_comics.Features.Auth.Commands.Register;
 using anime_comics.Features.Auth.Queries.GetUser;
+using anime_comics.Features.Auth.Queries.GetUsers;
+using anime_comics.Utils.Attributes;
+using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Authentication;
+using anime_comics.Utils.Enum;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +44,7 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    [Authorize]
+    [AuthorizeStatus(Status.Active)]
     [HttpGet("me")]
     public async Task<ActionResult<UserDto>> GetUser()
     {
@@ -50,7 +54,7 @@ public class AuthController : ControllerBase
         return Ok(user);
     }
 
-    [Authorize]
+    [AuthorizeStatus(Status.Active)]
     [HttpPost("logout")]
     public async Task<ActionResult> Logout()
     {
@@ -72,6 +76,15 @@ public class AuthController : ControllerBase
         }
         
         return BadRequest();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [AuthorizeStatus(Status.Active)]
+    [HttpGet]
+    public async Task<ActionResult<PageResponse<UserDto>>> GetUsers([FromQuery] GetUsersQuery query){
+        var response = await _mediator.Send(query);
+        return Ok(response);
+
     }
 
     [HttpPost("refresh-token")]

@@ -34,7 +34,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse>
             throw new BadRequestExceptions("invalid credentials");
         }
 
-        if (user.status != UserStatus.Active)
+        if (user.status != Status.Active)
         {
             throw new BadRequestExceptions("user is not active");
         }
@@ -51,7 +51,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse>
 
         var refreshToken = new RefreshTokens
         {
-            UserId = user.id,
+            UserId = user.Id,
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
             ExpireAt = DateTime.UtcNow.AddDays(10),
             CreatedAt = DateTime.UtcNow,
@@ -76,8 +76,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse>
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>{
-            new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email)
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role , user.role.ToString()),
+            new Claim("status" , user.status.ToString())
         };
 
         var token = new JwtSecurityToken(

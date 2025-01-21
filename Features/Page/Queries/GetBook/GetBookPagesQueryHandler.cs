@@ -21,7 +21,7 @@ public class GetBookPagesQueryHandler : IRequestHandler<GetBookPagesQuery, List<
             .OrderBy(p => p.PageNumber)
             .Select(p => new PageDto
             {
-                Id = p.id,
+                Id = p.Id,
                 BookId = p.BookId,
                 PageNumber = p.PageNumber,
                 ImageUrl = p.ImageUrl

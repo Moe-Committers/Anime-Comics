@@ -12,7 +12,7 @@ using anime_comics.DB;
 namespace anime_comics.Migrations
 {
     [DbContext(typeof(database))]
-    [Migration("20250120082238_init")]
+    [Migration("20250121055231_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -27,13 +27,13 @@ namespace anime_comics.Migrations
 
             modelBuilder.Entity("BooksCategories", b =>
                 {
-                    b.Property<long>("Booksid")
+                    b.Property<long>("BooksId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("CategoriesId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("Booksid", "CategoriesId");
+                    b.HasKey("BooksId", "CategoriesId");
 
                     b.HasIndex("CategoriesId");
 
@@ -42,11 +42,11 @@ namespace anime_comics.Migrations
 
             modelBuilder.Entity("anime_comics.Models.Books", b =>
                 {
-                    b.Property<long>("id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Author")
                         .IsRequired()
@@ -69,6 +69,9 @@ namespace anime_comics.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("Published_at")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -79,12 +82,12 @@ namespace anime_comics.Migrations
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("Usersid")
+                    b.Property<long>("UsersId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
-                    b.HasIndex("Usersid");
+                    b.HasIndex("UsersId");
 
                     b.ToTable("books");
                 });
@@ -97,9 +100,28 @@ namespace anime_comics.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("status")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -108,11 +130,11 @@ namespace anime_comics.Migrations
 
             modelBuilder.Entity("anime_comics.Models.Comments", b =>
                 {
-                    b.Property<long>("id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("BookId")
                         .HasColumnType("bigint");
@@ -136,7 +158,7 @@ namespace anime_comics.Migrations
                     b.Property<long?>("parentId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("BookId");
 
@@ -147,11 +169,11 @@ namespace anime_comics.Migrations
 
             modelBuilder.Entity("anime_comics.Models.Favourites", b =>
                 {
-                    b.Property<long>("id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("BookId")
                         .HasColumnType("bigint");
@@ -168,7 +190,7 @@ namespace anime_comics.Migrations
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("BookId");
 
@@ -179,11 +201,11 @@ namespace anime_comics.Migrations
 
             modelBuilder.Entity("anime_comics.Models.Pages", b =>
                 {
-                    b.Property<long>("id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("BookId")
                         .HasColumnType("bigint");
@@ -204,7 +226,7 @@ namespace anime_comics.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("BookId");
 
@@ -213,11 +235,11 @@ namespace anime_comics.Migrations
 
             modelBuilder.Entity("anime_comics.Models.RefreshTokens", b =>
                 {
-                    b.Property<long>("id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -254,7 +276,7 @@ namespace anime_comics.Migrations
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
@@ -263,11 +285,11 @@ namespace anime_comics.Migrations
 
             modelBuilder.Entity("anime_comics.Models.Users", b =>
                 {
-                    b.Property<long>("id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<int>("Age")
                         .HasColumnType("integer");
@@ -294,16 +316,18 @@ namespace anime_comics.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Profile")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("role")
+                        .HasColumnType("integer");
+
                     b.Property<int>("status")
                         .HasColumnType("integer");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.ToTable("users");
                 });
@@ -312,7 +336,7 @@ namespace anime_comics.Migrations
                 {
                     b.HasOne("anime_comics.Models.Books", null)
                         .WithMany()
-                        .HasForeignKey("Booksid")
+                        .HasForeignKey("BooksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -327,7 +351,7 @@ namespace anime_comics.Migrations
                 {
                     b.HasOne("anime_comics.Models.Users", "Users")
                         .WithMany("Books")
-                        .HasForeignKey("Usersid")
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

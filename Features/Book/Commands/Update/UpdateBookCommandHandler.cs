@@ -22,24 +22,27 @@ public class UpdateBookCommandHandler : IRequestHandler<UpdateBookCommand, bool>
 
         var book = await _db.books
             .Include(b => b.Categories)
-            .FirstOrDefaultAsync(b => b.id == request.Id && b.UserId == userId, ct);
+            .FirstOrDefaultAsync(b => b.Id == request.Id && b.UserId == userId, ct);
 
         if (book == null) return false;
 
-        book.Title = request.Title;
-        book.Description = request.Description;
-        book.Author = request.Author;
-        book.ImageUrl = request.ImageUrl;
+        book.Title = request.Title ?? book.Title;
+        book.Description = request.Description ?? book.Description;
+        book.Author = request.Author ?? book.Author;
+        book.ImageUrl = request.ImageUrl ?? book.ImageUrl;
         book.UpdatedAt = DateTime.UtcNow;
 
-        var categories = await _db.categories
-            .Where(c => request.CategoryIds.Contains(c.Id))
-            .ToListAsync(ct);
-
-        book.Categories.Clear();
-        foreach (var category in categories)
+        if (request.CategoryIds?.Any() == true)
         {
-            book.Categories.Add(category);
+            var categories = await _db.categories
+                .Where(c => request.CategoryIds.Contains(c.Id))
+                .ToListAsync(ct);
+
+            book.Categories.Clear();
+            foreach (var category in categories)
+            {
+                book.Categories.Add(category);
+            }
         }
 
         await _db.SaveChangesAsync(ct);

@@ -22,7 +22,7 @@ public class DeletePageCommandHandler : IRequestHandler<DeletePageCommand, bool>
 
         var page = await _db.pages
             .Include(p => p.Book)
-            .FirstOrDefaultAsync(p => p.id == request.Id && p.Book.UserId == userId, ct);
+            .FirstOrDefaultAsync(p => p.Id == request.Id && p.Book.UserId == userId, ct);
 
         if (page == null) return false;
 

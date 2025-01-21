@@ -21,7 +21,7 @@ public class UpdateCommentCommandHandler : IRequestHandler<UpdateCommentCommand,
         var userId = long.Parse(_httpContext.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         var comment = await _db.comments.FirstOrDefaultAsync(c =>
-            c.id == request.Id && c.UserId == userId, ct);
+            c.Id == request.Id && c.UserId == userId, ct);
 
         if (comment == null) return false;
 

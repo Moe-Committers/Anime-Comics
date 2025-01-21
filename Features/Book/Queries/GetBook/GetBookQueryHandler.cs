@@ -1,6 +1,7 @@
 using anime_comics.DB;
 using anime_comics.Utils.DTOs.Books;
 using anime_comics.Utils.Helpers.Exceptions;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -18,11 +19,30 @@ public class GetBookQueryHandler : IRequestHandler<GetBookQuery, BookDetailDto>
 
     public async Task<BookDetailDto> Handle(GetBookQuery request, CancellationToken ct)
     {
-        var book = await _db.books
+        var bookQuery = _db.books
             .Include(b => b.Categories)
             .Include(b => b.Users)
-            .Include(b => b.Pages)
-            .FirstOrDefaultAsync(b => b.id == request.Id, ct);
+            .Where(b => b.Id == request.Id);
+
+        if(request.published){
+            bookQuery = bookQuery.Where(b => b.Published_at != null);
+        }
+
+        var book = await bookQuery.Select(b => new BookDetailDto
+        {
+            Id = b.Id,
+            Title = b.Title,
+            Description = b.Description,
+            Author = b.Author,
+            Published_at = b.Published_at,
+            ImageUrl = b.ImageUrl,
+            UserName = b.Users.Name,
+            Fav = b.Fav,
+            Categories = b.Categories.Select(c => new Cate {
+                Id = c.Id,
+                Name = c.Name
+            }).ToList()
+        }).FirstOrDefaultAsync(ct);
 
         if (book == null)
             throw new NotFoundExceptions("Book not found");

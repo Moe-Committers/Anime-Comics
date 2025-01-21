@@ -10,7 +10,7 @@ public static class SwaggenConfig
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "bruh",
+                Title = "Anime-Comics",
                 Version = "v1"
             });
 

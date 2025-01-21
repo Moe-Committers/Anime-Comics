@@ -19,7 +19,6 @@ public class GetBooksQueryHandler : IRequestHandler<GetBooksQuery, PageResponse<
     public async Task<PageResponse<BookDto>> Handle(GetBooksQuery request, CancellationToken ct)
     {
         var query = _db.books
-            .Include(b => b.Categories)
             .Include(b => b.Users)
             .AsQueryable();
 
@@ -36,6 +35,34 @@ public class GetBooksQueryHandler : IRequestHandler<GetBooksQuery, PageResponse<
             query = query.Where(b => b.Categories.Any(c => c.Id == request.CategoryId));
         }
 
+        if(request.FromDate.HasValue){
+            query = query.Where(b => b.CreatedAt >= request.FromDate);
+        }
+
+        if(request.ToDate.HasValue){
+            query = query.Where(b => b.CreatedAt <= request.ToDate);
+        }
+
+        if(request.pulished){
+            query = query.Where(b => b.Published_at != null);
+        }
+
+        query = request.sort?.ToLower() switch {
+            "title" => request.IsAscending
+                ? query.OrderBy(b => b.Title)
+                : query.OrderByDescending(b => b.Title),
+            "author" => request.IsAscending
+                ? query.OrderBy(b => b.Author)
+                : query.OrderByDescending(b => b.Author),
+            "fav" => request.IsAscending
+                ? query.OrderBy(b => b.Fav)
+                : query.OrderByDescending(b => b.Fav),
+            "created" => request.IsAscending
+                ? query.OrderBy(b => b.CreatedAt)
+                : query.OrderByDescending(b => b.CreatedAt),
+            _ => query.OrderByDescending(b => b.CreatedAt)
+        };
+
         var totalCount = await _db.books.CountAsync();
 
         var books = await query
@@ -43,18 +70,13 @@ public class GetBooksQueryHandler : IRequestHandler<GetBooksQuery, PageResponse<
         .Take(request.PageSize)
         .Select(b => new BookDto
         {
-            Id = b.id,
+            Id = b.Id,
             Title = b.Title,
-            Description = b.Description,
             Author = b.Author,
             ImageUrl = b.ImageUrl,
+            Published_at = b.Published_at,
             UserName = b.Users.Name,
-            Fav = b.Fav,
-            Categories = b.Categories.Select(c => new Cate
-            {
-                Id = c.Id,
-                Name = c.Name
-            }).ToList()
+            Fav = b.Fav
         })
         .ToListAsync(ct);
 

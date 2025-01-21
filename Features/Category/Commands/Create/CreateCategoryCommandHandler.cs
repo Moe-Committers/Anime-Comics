@@ -1,5 +1,6 @@
 using anime_comics.DB;
 using anime_comics.Models;
+using anime_comics.Utils.Enum;
 using anime_comics.Utils.Helpers.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,10 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
 
         var category = new Categories
         {
-            Name = request.Name
+            Name = request.Name,
+            status = Status.InActive,
+            Icon = request.Icon,
+            Order = request.Order
         };
 
         _db.categories.Add(category);

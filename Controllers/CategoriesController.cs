@@ -3,7 +3,10 @@ using anime_comics.Features.Category.Commands.Delete;
 using anime_comics.Features.Category.Commands.Update;
 using anime_comics.Features.Category.Queries.GetCategories;
 using anime_comics.Features.Category.Queries.GetCategory;
+using anime_comics.Utils.Attributes;
+using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Category;
+using anime_comics.Utils.Enum;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,23 +22,46 @@ public class CategoriesController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<CategoryDto>>> GetCategories()
+    [HttpGet("get-active")]
+    public async Task<ActionResult<PageResponse<CategoryDto>>> GetActiveCategories([FromQuery] GetCategoriesQuery query )
     {
-        var query = new GetCategoriesQuery();
-        var categories = await _mediator.Send(query);
+        var newQuery = query with {Toggle = true};
+        var categories = await _mediator.Send(newQuery);
         return Ok(categories);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<CategoryDetailDto>> GetCategory(long id)
+    [Authorize(Roles = "Admin")]
+    [AuthorizeStatus(Status.Active)]
+    [HttpGet]
+    public async Task<ActionResult<PageResponse<CategoryDto>>> GetCategories([FromQuery] GetCategoriesQuery query )
     {
-        var query = new GetCategoryQuery(id);
-        var category = await _mediator.Send(query);
+        var newQuery = query with {Toggle = false};
+        var categories = await _mediator.Send(newQuery);
+        return Ok(categories);
+    }
+
+    [HttpGet("get-active/{id}")]
+    public async Task<ActionResult<CategoryDetailDto>> GetActiveCategory(long id)
+    {
+        var query = new GetCategoryQuery();
+        var newQuery = query with {Id = id , Toggle = true};
+        var category = await _mediator.Send(newQuery);
         return Ok(category);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
+    [AuthorizeStatus(Status.Active)]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<CategoryDetailDto>> GetCategory(long id)
+    {
+        var query = new GetCategoryQuery();
+        var newQuery = query with {Id = id , Toggle = false};
+        var category = await _mediator.Send(newQuery);
+        return Ok(category);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [AuthorizeStatus(Status.Active)]
     [HttpPost]
     public async Task<ActionResult<long>> CreateCategory(CreateCategoryCommand command)
     {
@@ -43,16 +69,18 @@ public class CategoriesController : ControllerBase
         return Ok(id);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
+    [AuthorizeStatus(Status.Active)]
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateCategory(long id, [FromBody] string name)
+    public async Task<ActionResult> UpdateCategory(long id, UpdateCategoryCommand command)
     {
-        var command = new UpdateCategoryCommand(id, name);
-        var success = await _mediator.Send(command);
+        var updateCommand = command with {Id = id };
+        var success = await _mediator.Send(updateCommand);
         return success ? NoContent() : NotFound();
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
+    [AuthorizeStatus(Status.Active)]
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteCategory(long id)
     {

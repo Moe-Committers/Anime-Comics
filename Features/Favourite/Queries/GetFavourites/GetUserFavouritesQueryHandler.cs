@@ -28,7 +28,7 @@ public class GetUserFavouritesQueryHandler : IRequestHandler<GetUserFavouritesQu
             .OrderByDescending(f => f.CreatedAt)
             .Select(f => new FavouriteBookDto
             {
-                Id = f.Book.id,
+                Id = f.Book.Id,
                 Title = f.Book.Title,
                 Author = f.Book.Author,
                 Description = f.Book.Description,

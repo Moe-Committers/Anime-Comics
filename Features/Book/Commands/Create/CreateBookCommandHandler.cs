@@ -45,6 +45,6 @@ public class CreateBookCommandHandler : IRequestHandler<CreateBookCommand, long>
         _db.books.Add(book);
         await _db.SaveChangesAsync(ct);
 
-        return book.id;
+        return book.Id;
     }
 }

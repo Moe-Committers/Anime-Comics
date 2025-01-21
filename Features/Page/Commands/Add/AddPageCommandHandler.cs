@@ -23,7 +23,7 @@ public class AddPageCommandHandler : IRequestHandler<AddPageCommand, long>
         var userId = long.Parse(_httpContext.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         var book = await _db.books
-            .FirstOrDefaultAsync(b => b.id == request.BookId && b.UserId == userId, ct);
+            .FirstOrDefaultAsync(b => b.Id == request.BookId && b.UserId == userId, ct);
 
         if (book == null)
             throw new NotFoundExceptions("Book not found or you don't have permission");
@@ -42,6 +42,6 @@ public class AddPageCommandHandler : IRequestHandler<AddPageCommand, long>
         _db.pages.Add(page);
         await _db.SaveChangesAsync(ct);
 
-        return page.id;
+        return page.Id;
     }
 }

@@ -19,14 +19,14 @@ public class GetCommentQueryHandler : IRequestHandler<GetCommentQuery, CommentDt
     {
         var comment = await _db.comments
             .Include(c => c.User)
-            .FirstOrDefaultAsync(c => c.id == request.Id, ct);
+            .FirstOrDefaultAsync(c => c.Id == request.Id, ct);
 
         if (comment == null)
             throw new NotFoundExceptions("Comment not found");
 
         var commentDto = new CommentDto
         {
-            Id = comment.id,
+            Id = comment.Id,
             Content = comment.Content,
             UserId = comment.UserId,
             UserName = comment.User.Name,
@@ -38,11 +38,11 @@ public class GetCommentQueryHandler : IRequestHandler<GetCommentQuery, CommentDt
         {
             commentDto.Replies = await _db.comments
                 .Include(c => c.User)
-                .Where(c => c.parentId == comment.id)
+                .Where(c => c.parentId == comment.Id)
                 .OrderBy(c => c.CreatedAt)
                 .Select(c => new CommentDto
                 {
-                    Id = c.id,
+                    Id = c.Id,
                     Content = c.Content,
                     UserId = c.UserId,
                     UserName = c.User.Name,

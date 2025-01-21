@@ -18,7 +18,7 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, UserDto>
 
     public async Task<UserDto> Handle(GetUserQuery request, CancellationToken ct)
     {
-        var user = await _db.users.FirstOrDefaultAsync(u => u.id == request.UserId, ct);
+        var user = await _db.users.FirstOrDefaultAsync(u => u.Id == request.UserId, ct);
         if (user == null)
         {
             throw new NotFoundExceptions("user not found");

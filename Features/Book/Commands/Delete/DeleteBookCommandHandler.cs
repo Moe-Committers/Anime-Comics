@@ -21,7 +21,7 @@ public class DeleteBookCommandHandler : IRequestHandler<DeleteBookCommand, bool>
         var userId = long.Parse(_httpContext.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         var book = await _db.books.FirstOrDefaultAsync(b => 
-            b.id == request.Id && b.UserId == userId, ct);
+            b.Id == request.Id && b.UserId == userId, ct);
 
         if (book == null) return false;
 

@@ -1,7 +1,9 @@
 using anime_comics.DB;
 using anime_comics.Utils.DTOs.Books;
 using anime_comics.Utils.DTOs.Category;
+using anime_comics.Utils.Enum;
 using anime_comics.Utils.Helpers.Exceptions;
+using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,26 +20,33 @@ public class GetCategoryQueryHandler : IRequestHandler<GetCategoryQuery, Categor
 
     public async Task<CategoryDetailDto> Handle(GetCategoryQuery request, CancellationToken ct)
     {
-        var category = await _db.categories
+        var categoryQuery = _db.categories
             .Include(c => c.Books)
                 .ThenInclude(b => b.Users)
-            .FirstOrDefaultAsync(c => c.Id == request.Id, ct);
+            .Where(c => c.Id == request.Id);
 
-        if (category == null)
-            throw new NotFoundExceptions("Category not found");
-
-        return new CategoryDetailDto
+        if (request.Toggle)
         {
-            Id = category.Id,
-            Name = category.Name,
-            Books = category.Books.Select(b => new BookDto
+            categoryQuery = categoryQuery.Where(c => c.status == Status.Active);
+        }
+
+        var category = await categoryQuery.Select(c => new CategoryDetailDto
+        {
+            Id = c.Id,
+            Name = c.Name,
+            Books = c.Books.Select(b => new BookDto
             {
-                Id = b.id,
+                Id = b.Id,
                 Title = b.Title,
                 Author = b.Author,
                 ImageUrl = b.ImageUrl,
                 UserName = b.Users.Name
             }).ToList()
-        };
+        }).FirstOrDefaultAsync();
+
+        if (category == null)
+            throw new NotFoundExceptions("Category not found");
+
+        return category.Adapt<CategoryDetailDto>();
     }
 }

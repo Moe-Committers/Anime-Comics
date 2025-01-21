@@ -24,7 +24,11 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
         var category = await _db.categories.FindAsync(request.Id);
         if (category == null) return false;
 
-        category.Name = request.Name;
+        category.Name = request.Name ?? category.Name;
+        category.status = request.status ?? category.status;
+        category.Icon = request.Icon ?? category.Icon;
+        category.Order = request.Order ?? category.Order;
+
         await _db.SaveChangesAsync(ct);
 
         return true;

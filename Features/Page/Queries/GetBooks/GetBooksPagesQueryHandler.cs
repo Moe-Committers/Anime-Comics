@@ -18,14 +18,14 @@ public class GetPageQueryHandler : IRequestHandler<GetPageQuery, PageDto>
     public async Task<PageDto> Handle(GetPageQuery request, CancellationToken ct)
     {
         var page = await _db.pages
-            .FirstOrDefaultAsync(p => p.id == request.Id, ct);
+            .FirstOrDefaultAsync(p => p.Id == request.Id, ct);
 
         if (page == null)
             throw new NotFoundExceptions("Page not found");
 
         return new PageDto
         {
-            Id = page.id,
+            Id = page.Id,
             BookId = page.BookId,
             PageNumber = page.PageNumber,
             ImageUrl = page.ImageUrl

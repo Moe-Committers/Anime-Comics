@@ -23,14 +23,14 @@ public class UpdatePageCommandHandler : IRequestHandler<UpdatePageCommand, bool>
 
         var page = await _db.pages
             .Include(p => p.Book)
-            .FirstOrDefaultAsync(p => p.id == request.Id && p.Book.UserId == userId, ct);
+            .FirstOrDefaultAsync(p => p.Id == request.Id && p.Book.UserId == userId, ct);
 
         if (page == null) return false;
 
         if (await _db.pages.AnyAsync(p => 
             p.BookId == request.BookId && 
             p.PageNumber == request.PageNumber && 
-            p.id != request.Id, ct))
+            p.Id != request.Id, ct))
         {
             throw new BadRequestExceptions($"Page {request.PageNumber} already exists");
         }

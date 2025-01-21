@@ -22,7 +22,7 @@ public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand,
     {
         var userId = long.Parse(_httpContext.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        if (!await _db.books.AnyAsync(b => b.id == request.BookId, ct))
+        if (!await _db.books.AnyAsync(b => b.Id == request.BookId, ct))
             throw new NotFoundExceptions("Book not found");
 
         if (request.ParentId.HasValue)
@@ -44,6 +44,6 @@ public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand,
         _db.comments.Add(comment);
         await _db.SaveChangesAsync(ct);
 
-        return comment.id;
+        return comment.Id;
     }
 }

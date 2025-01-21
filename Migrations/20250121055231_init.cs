@@ -18,7 +18,13 @@ namespace anime_comics.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    status = table.Column<int>(type: "integer", nullable: false),
+                    Icon = table.Column<string>(type: "text", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -29,49 +35,51 @@ namespace anime_comics.Migrations
                 name: "users",
                 columns: table => new
                 {
-                    id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Age = table.Column<int>(type: "integer", nullable: false),
-                    Profile = table.Column<string>(type: "text", nullable: false),
+                    Profile = table.Column<string>(type: "text", nullable: true),
                     Email = table.Column<string>(type: "text", nullable: false),
                     Password = table.Column<string>(type: "text", nullable: false),
                     LastLogin = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     status = table.Column<int>(type: "integer", nullable: false),
+                    role = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_users", x => x.id);
+                    table.PrimaryKey("PK_users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "books",
                 columns: table => new
                 {
-                    id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Author = table.Column<string>(type: "text", nullable: false),
+                    Published_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Fav = table.Column<int>(type: "integer", nullable: false),
                     ImageUrl = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    Usersid = table.Column<long>(type: "bigint", nullable: false),
+                    UsersId = table.Column<long>(type: "bigint", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_books", x => x.id);
+                    table.PrimaryKey("PK_books", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_books_users_Usersid",
-                        column: x => x.Usersid,
+                        name: "FK_books_users_UsersId",
+                        column: x => x.UsersId,
                         principalTable: "users",
-                        principalColumn: "id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -79,7 +87,7 @@ namespace anime_comics.Migrations
                 name: "refreshTokens",
                 columns: table => new
                 {
-                    id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     Token = table.Column<string>(type: "text", nullable: false),
@@ -95,12 +103,12 @@ namespace anime_comics.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_refreshTokens", x => x.id);
+                    table.PrimaryKey("PK_refreshTokens", x => x.Id);
                     table.ForeignKey(
                         name: "FK_refreshTokens_users_UserId",
                         column: x => x.UserId,
                         principalTable: "users",
-                        principalColumn: "id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -108,17 +116,17 @@ namespace anime_comics.Migrations
                 name: "BooksCategories",
                 columns: table => new
                 {
-                    Booksid = table.Column<long>(type: "bigint", nullable: false),
+                    BooksId = table.Column<long>(type: "bigint", nullable: false),
                     CategoriesId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BooksCategories", x => new { x.Booksid, x.CategoriesId });
+                    table.PrimaryKey("PK_BooksCategories", x => new { x.BooksId, x.CategoriesId });
                     table.ForeignKey(
-                        name: "FK_BooksCategories_books_Booksid",
-                        column: x => x.Booksid,
+                        name: "FK_BooksCategories_books_BooksId",
+                        column: x => x.BooksId,
                         principalTable: "books",
-                        principalColumn: "id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_BooksCategories_categories_CategoriesId",
@@ -132,7 +140,7 @@ namespace anime_comics.Migrations
                 name: "comments",
                 columns: table => new
                 {
-                    id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     BookId = table.Column<long>(type: "bigint", nullable: false),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
@@ -144,18 +152,18 @@ namespace anime_comics.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_comments", x => x.id);
+                    table.PrimaryKey("PK_comments", x => x.Id);
                     table.ForeignKey(
                         name: "FK_comments_books_BookId",
                         column: x => x.BookId,
                         principalTable: "books",
-                        principalColumn: "id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_comments_users_UserId",
                         column: x => x.UserId,
                         principalTable: "users",
-                        principalColumn: "id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -163,7 +171,7 @@ namespace anime_comics.Migrations
                 name: "favourites",
                 columns: table => new
                 {
-                    id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     BookId = table.Column<long>(type: "bigint", nullable: false),
@@ -173,18 +181,18 @@ namespace anime_comics.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_favourites", x => x.id);
+                    table.PrimaryKey("PK_favourites", x => x.Id);
                     table.ForeignKey(
                         name: "FK_favourites_books_BookId",
                         column: x => x.BookId,
                         principalTable: "books",
-                        principalColumn: "id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_favourites_users_UserId",
                         column: x => x.UserId,
                         principalTable: "users",
-                        principalColumn: "id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -192,7 +200,7 @@ namespace anime_comics.Migrations
                 name: "pages",
                 columns: table => new
                 {
-                    id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     PageNumber = table.Column<int>(type: "integer", nullable: false),
                     BookId = table.Column<long>(type: "bigint", nullable: false),
@@ -203,19 +211,19 @@ namespace anime_comics.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_pages", x => x.id);
+                    table.PrimaryKey("PK_pages", x => x.Id);
                     table.ForeignKey(
                         name: "FK_pages_books_BookId",
                         column: x => x.BookId,
                         principalTable: "books",
-                        principalColumn: "id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_books_Usersid",
+                name: "IX_books_UsersId",
                 table: "books",
-                column: "Usersid");
+                column: "UsersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BooksCategories_CategoriesId",

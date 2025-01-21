@@ -22,7 +22,7 @@ public class GetBookCommentsQueryHandler : IRequestHandler<GetBookCommentsQuery,
             .OrderByDescending(c => c.CreatedAt)
             .Select(c => new CommentDto
             {
-                Id = c.id,
+                Id = c.Id,
                 Content = c.Content,
                 UserId = c.UserId,
                 UserName = c.User.Name,
@@ -47,7 +47,7 @@ public class GetBookCommentsQueryHandler : IRequestHandler<GetBookCommentsQuery,
             .OrderBy(c => c.CreatedAt)
             .Select(c => new CommentDto
             {
-                Id = c.id,
+                Id = c.Id,
                 Content = c.Content,
                 UserId = c.UserId,
                 UserName = c.User.Name,
