@@ -1,5 +1,5 @@
-using System.Security.Claims;
 using anime_comics.DB;
+using anime_comics.Utils.Helpers.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,26 +8,33 @@ namespace anime_comics.Features.Page.Commands.Delete;
 public class DeletePageCommandHandler : IRequestHandler<DeletePageCommand, bool>
 {
     private readonly database _db;
-    private readonly IHttpContextAccessor _httpContext;
+    private readonly IImageService _imageService;
 
-    public DeletePageCommandHandler(database db, IHttpContextAccessor httpContext)
+    public DeletePageCommandHandler(database db, IImageService imageService)
     {
         _db = db;
-        _httpContext = httpContext;
+        _imageService = imageService;
     }
 
     public async Task<bool> Handle(DeletePageCommand request, CancellationToken ct)
     {
-        var userId = long.Parse(_httpContext.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-        var page = await _db.pages
+        var pages = await _db.pages
             .Include(p => p.Book)
-            .FirstOrDefaultAsync(p => p.Id == request.Id && p.Book.UserId == userId, ct);
+            .Where(p => p.BookId == request.BookId &&
+                       request.PageIds.Contains(p.Id))
+            .ToListAsync(ct);
 
-        if (page == null) return false;
+        if (!pages.Any())
+            return false;
 
-        _db.pages.Remove(page);
+        foreach (var page in pages)
+        {
+            _imageService.DeleteImage(page.ImageUrl);
+        }
+
+        _db.pages.RemoveRange(pages);
         await _db.SaveChangesAsync(ct);
+
         return true;
     }
 }

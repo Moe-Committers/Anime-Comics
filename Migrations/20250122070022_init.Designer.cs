@@ -12,7 +12,7 @@ using anime_comics.DB;
 namespace anime_comics.Migrations
 {
     [DbContext(typeof(database))]
-    [Migration("20250121133906_init")]
+    [Migration("20250122070022_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -219,6 +219,9 @@ namespace anime_comics.Migrations
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
 
                     b.Property<int>("PageNumber")
                         .HasColumnType("integer");

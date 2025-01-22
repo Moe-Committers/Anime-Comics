@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using anime_comics.DB;
+using anime_comics.Utils.Helpers.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,11 +10,13 @@ public class UpdateBookCommandHandler : IRequestHandler<UpdateBookCommand, bool>
 {
     private readonly database _db;
     private readonly IHttpContextAccessor _httpContext;
+    private readonly IImageService _imageService;
 
-    public UpdateBookCommandHandler(database db, IHttpContextAccessor httpContext)
+    public UpdateBookCommandHandler(database db, IHttpContextAccessor httpContext , IImageService imageService)
     {
         _db = db;
         _httpContext = httpContext;
+        _imageService = imageService;
     }
 
     public async Task<bool> Handle(UpdateBookCommand request, CancellationToken ct)
@@ -29,7 +32,12 @@ public class UpdateBookCommandHandler : IRequestHandler<UpdateBookCommand, bool>
         book.Title = request.Title ?? book.Title;
         book.Description = request.Description ?? book.Description;
         book.Author = request.Author ?? book.Author;
-        book.ImageUrl = request.ImageUrl ?? book.ImageUrl;
+        if(request.ImageUrl != null){
+            if(!string.IsNullOrEmpty(book.ImageUrl)){
+                _imageService.DeleteImage(book.ImageUrl);
+            }
+            book.ImageUrl = await _imageService.UploadImage(request.ImageUrl,"book-cover");
+        }
         book.UpdatedAt = DateTime.UtcNow;
 
         if (request.CategoryIds?.Any() == true)

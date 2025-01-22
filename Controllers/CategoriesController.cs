@@ -7,6 +7,8 @@ using anime_comics.Utils.Attributes;
 using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Category;
 using anime_comics.Utils.Enum;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Wordprocessing;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -63,7 +65,7 @@ public class CategoriesController : ControllerBase
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpPost]
-    public async Task<ActionResult<long>> CreateCategory(CreateCategoryCommand command)
+    public async Task<ActionResult<long>> CreateCategory([FromForm] CreateCategoryCommand command)
     {
         var id = await _mediator.Send(command);
         return Ok(id);
@@ -72,10 +74,16 @@ public class CategoriesController : ControllerBase
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateCategory(long id, UpdateCategoryCommand command)
+    public async Task<ActionResult> UpdateCategory(long id, [FromForm] UpdateCategory req)
     {
-        var updateCommand = command with {Id = id };
-        var success = await _mediator.Send(updateCommand);
+        var command = new UpdateCategoryCommand {
+            Id = id,
+            Name = req.Name,
+            status = req.status,
+            Icon = req.Icon,
+            Order = req.Order
+        };
+        var success = await _mediator.Send(command);
         return success ? NoContent() : NotFound();
     }
 

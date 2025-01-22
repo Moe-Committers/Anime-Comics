@@ -10,6 +10,7 @@ using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Books;
 using anime_comics.Utils.DTOs.ShowcaseResponse;
 using anime_comics.Utils.Enum;
+using DocumentFormat.OpenXml.Bibliography;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -85,7 +86,7 @@ public class BooksController : ControllerBase
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpPost]
-    public async Task<ActionResult<long>> CreateBook(CreateBookCommand command)
+    public async Task<ActionResult<long>> CreateBook([FromForm] CreateBookCommand command)
     {
         var id = await _mediator.Send(command);
         return Ok(id);
@@ -94,10 +95,17 @@ public class BooksController : ControllerBase
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateBook(long id, UpdateBookCommand command)
+    public async Task<ActionResult> UpdateBook(long id, [FromForm] UpdateBook req)
     {
-        var updateCommand = command with { Id = id };
-        var success = await _mediator.Send(updateCommand);
+        var command = new UpdateBookCommand {
+            Id = id,
+            Title = req.Title,
+            Description = req.Description,
+            Author = req.Author,
+            ImageUrl = req.ImageUrl,
+            CategoryIds = req.CategoryIds
+        };
+        var success = await _mediator.Send(command);
         return success ? NoContent() : NotFound();
     }
 

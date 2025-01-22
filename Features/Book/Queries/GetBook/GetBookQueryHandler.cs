@@ -40,7 +40,8 @@ public class GetBookQueryHandler : IRequestHandler<GetBookQuery, BookDetailDto>
             Fav = b.Fav,
             Categories = b.Categories.Select(c => new Cate {
                 Id = c.Id,
-                Name = c.Name
+                Name = c.Name,
+                Order = c.Order
             }).ToList()
         }).FirstOrDefaultAsync(ct);
 

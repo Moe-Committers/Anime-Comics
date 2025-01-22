@@ -2,46 +2,60 @@ using System.Security.Claims;
 using anime_comics.DB;
 using anime_comics.Models;
 using anime_comics.Utils.Helpers.Exceptions;
+using anime_comics.Utils.Helpers.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace anime_comics.Features.Page.Commands.Add;
 
-public class AddPageCommandHandler : IRequestHandler<AddPageCommand, long>
+public class AddPageCommandHandler : IRequestHandler<AddPageCommand, List<long>>
 {
     private readonly database _db;
     private readonly IHttpContextAccessor _httpContext;
+    private readonly IImageService _imageService;
 
-    public AddPageCommandHandler(database db, IHttpContextAccessor httpContext)
+    public AddPageCommandHandler(database db, IHttpContextAccessor httpContext, IImageService imageService)
     {
         _db = db;
         _httpContext = httpContext;
+        _imageService = imageService;
     }
 
-    public async Task<long> Handle(AddPageCommand request, CancellationToken ct)
+    public async Task<List<long>> Handle(AddPageCommand request, CancellationToken ct)
     {
-        var userId = long.Parse(_httpContext.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
         var book = await _db.books
-            .FirstOrDefaultAsync(b => b.Id == request.BookId && b.UserId == userId, ct);
+            .Include(b => b.Pages)
+            .FirstOrDefaultAsync(b => b.Id == request.BookId, ct);
 
         if (book == null)
             throw new NotFoundExceptions("Book not found or you don't have permission");
 
-        if (await _db.pages.AnyAsync(p => p.BookId == request.BookId && p.PageNumber == request.PageNumber, ct))
-            throw new BadRequestExceptions($"Page {request.PageNumber} already exists");
+        var startingPageNumber = book.Pages.Any() ? book.Pages.Max(p => p.PageNumber) + 1 : 1;
 
-        var page = new Pages
+        var newPages = new List<Pages>();
+        var pageIds = new List<long>();
+
+        for (int i = 0; i < request.ImageUrl.Count; i++)
         {
-            BookId = request.BookId,
-            PageNumber = request.PageNumber,
-            ImageUrl = request.ImageUrl,
-            CreatedAt = DateTime.Now
-        };
+            var image = request.ImageUrl[i];
+            var pageNumber = startingPageNumber + i;
 
-        _db.pages.Add(page);
+            var imageUrl = await _imageService.UploadImage(image, $"book-{request.BookId}/page-{pageNumber}");
+
+            var page = new Pages
+            {
+                BookId = request.BookId,
+                PageNumber = pageNumber,
+                ImageUrl = imageUrl,
+                CreatedAt = DateTime.Now
+            };
+
+            newPages.Add(page);
+        }
+
+        _db.pages.AddRange(newPages);
         await _db.SaveChangesAsync(ct);
 
-        return page.Id;
+        return newPages.Select(p => p.Id).ToList();
     }
 }

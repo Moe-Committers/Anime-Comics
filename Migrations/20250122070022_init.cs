@@ -205,6 +205,7 @@ namespace anime_comics.Migrations
                     PageNumber = table.Column<int>(type: "integer", nullable: false),
                     BookId = table.Column<long>(type: "bigint", nullable: false),
                     ImageUrl = table.Column<string>(type: "text", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)

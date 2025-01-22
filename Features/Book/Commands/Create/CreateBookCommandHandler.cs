@@ -2,6 +2,7 @@ using System.Security.Claims;
 using anime_comics.DB;
 using anime_comics.Models;
 using anime_comics.Utils.Helpers.Exceptions;
+using anime_comics.Utils.Helpers.Services.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,11 +12,13 @@ public class CreateBookCommandHandler : IRequestHandler<CreateBookCommand, long>
 {
     private readonly database _db;
     private readonly IHttpContextAccessor _httpContext;
+    private readonly IImageService _imageService;
 
-    public CreateBookCommandHandler(database db, IHttpContextAccessor httpContext)
+    public CreateBookCommandHandler(database db, IHttpContextAccessor httpContext , IImageService imageService)
     {
         _db = db;
         _httpContext = httpContext;
+        _imageService = imageService;
     }
 
     public async Task<long> Handle(CreateBookCommand request, CancellationToken ct)
@@ -35,7 +38,7 @@ public class CreateBookCommandHandler : IRequestHandler<CreateBookCommand, long>
             Title = request.Title,
             Description = request.Description,
             Author = request.Author,
-            ImageUrl = request.ImageUrl,
+            ImageUrl = await _imageService.UploadImage(request.ImageUrl,"book-cover"),
             UserId = userId,
             Users = user,
             Categories = categories,

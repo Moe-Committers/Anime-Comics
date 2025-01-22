@@ -1,7 +1,5 @@
 rating system
 
-fix upload images , books , pages
-
 checking the features
 
 /// format all the response to be like this {success = false/true , message:"" , data:null or have} same for paginateResponse
