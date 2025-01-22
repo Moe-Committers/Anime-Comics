@@ -24,7 +24,7 @@ public class ImageService : IImageService{
         var filePath = Path.Combine(uploadDirectory , fileName);
 
         using(var fileStream = new FileStream(filePath , FileMode.Create)){
-            image.CopyToAsync(fileStream);
+            await image.CopyToAsync(fileStream);
         }
 
         return $"/uploads/{subDirectory}/{fileName}";

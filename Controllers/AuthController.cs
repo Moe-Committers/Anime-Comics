@@ -4,6 +4,7 @@ using anime_comics.Features.Auth.Commands.RefreshToken;
 using anime_comics.Features.Auth.Commands.Register;
 using anime_comics.Features.Auth.Queries.GetUser;
 using anime_comics.Features.Auth.Queries.GetUsers;
+using anime_comics.Features.Auth.Commands.UpdateProfile;
 using anime_comics.Utils.Attributes;
 using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Authentication;
@@ -12,6 +13,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using anime_comics.Features.Auth.Commands.UpdateUserPassword;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -76,6 +78,25 @@ public class AuthController : ControllerBase
         }
         
         return BadRequest();
+    }
+
+    [Authorize]
+    [HttpPut("change-avatar")]
+    public async Task<ActionResult<UserDto>> ChangeAvatar([FromForm] UpdateUserProfile req){
+        var command = new UpdateProfileCommand();
+        var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+        var newQuery = command with {Id = userId , Name = req.Name , Img = req.FileImg};
+        var response = await _mediator.Send(newQuery);
+        return Ok(response);
+    }
+
+    [Authorize]
+    [HttpPut("change-password")]
+    public async Task<ActionResult<UserDto>> ChangePassword(UpdateUserPassCommand command){
+        var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+        var newQuery = command with {Id = userId};
+        var response = await _mediator.Send(newQuery);
+        return Ok(response);
     }
 
     [Authorize(Roles = "Admin")]

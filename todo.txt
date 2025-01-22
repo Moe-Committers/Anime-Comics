@@ -4,12 +4,6 @@ fix upload images , books , pages
 
 checking the features
 
-user can upload profile picture / doing 
-
-user can edit information eg username , profile picture , and change password the password basically base of current password compare if it correct allow to change new password
-
-be able to activate user account and deactivate their account / doing - next
-
 /// format all the response to be like this {success = false/true , message:"" , data:null or have} same for paginateResponse
 
 /// soft delete feature coming soon

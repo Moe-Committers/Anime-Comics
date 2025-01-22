@@ -12,7 +12,7 @@ using anime_comics.DB;
 namespace anime_comics.Migrations
 {
     [DbContext(typeof(database))]
-    [Migration("20250121055231_init")]
+    [Migration("20250121133906_init")]
     partial class init
     {
         /// <inheritdoc />
