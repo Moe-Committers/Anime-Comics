@@ -9,6 +9,7 @@ public record GetBooksQuery : IRequest<PageResponse<BookDto>>
 {
     [JsonIgnore]
     public bool pulished {get; set;}
+    public bool isLatest {get; set;} = false;
     public string? Search { get; init; }
     public long? CategoryId { get; init; }
     public DateTime? FromDate {get; set;}

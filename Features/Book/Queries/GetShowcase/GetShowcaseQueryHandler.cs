@@ -21,7 +21,6 @@ public class GetShowcaseQueryHandler : IRequestHandler<GetShowcaseQuery, Showcas
     {
         var sections = new List<ShowcaseSection>();
 
-        // Get Popular Books (by favourites)
         var popularBooks = await _db.books
             .Include(b => b.Users)
             .Where(b => b.Published_at != null)

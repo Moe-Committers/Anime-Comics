@@ -7,8 +7,6 @@ using anime_comics.Utils.Attributes;
 using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Category;
 using anime_comics.Utils.Enum;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Wordprocessing;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

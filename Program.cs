@@ -28,6 +28,20 @@ var connectionString = builder.Configuration.GetConnectionString("Database");
 builder.Services.AddDbContext<database>(option =>{
     option.UseNpgsql(connectionString);
 });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+        });
+});
+
 builder.Services.AddControllers();
 builder.Services.UseImageService();
 var app = builder.Build();
@@ -40,8 +54,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
+
+app.UseCors("AllowAll");
 app.useMiddleware();
+app.UseRouting();
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();

@@ -4,13 +4,13 @@ using anime_comics.Features.Book.Commands.Publish;
 using anime_comics.Features.Book.Commands.Update;
 using anime_comics.Features.Book.Queries.GetBook;
 using anime_comics.Features.Book.Queries.GetBooks;
+using anime_comics.Features.Book.Queries.GetPopularBook;
 using anime_comics.Features.Book.Queries.GetShowcase;
 using anime_comics.Utils.Attributes;
 using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Books;
 using anime_comics.Utils.DTOs.ShowcaseResponse;
 using anime_comics.Utils.Enum;
-using DocumentFormat.OpenXml.Bibliography;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +44,11 @@ public class BooksController : ControllerBase
         return Ok(books);
     }
 
+    [HttpGet("Popular-updates")]
+    public async Task<ActionResult<List<BookDetailDto>>> GetPopularUpdates([FromQuery] GetPopularBookQuery query){
+        var data = await _mediator.Send(query);
+        return Ok(data);
+    }
 
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]

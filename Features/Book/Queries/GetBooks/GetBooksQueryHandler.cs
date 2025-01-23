@@ -35,19 +35,28 @@ public class GetBooksQueryHandler : IRequestHandler<GetBooksQuery, PageResponse<
             query = query.Where(b => b.Categories.Any(c => c.Id == request.CategoryId));
         }
 
-        if(request.FromDate.HasValue){
+        if (request.FromDate.HasValue)
+        {
             query = query.Where(b => b.CreatedAt >= request.FromDate);
         }
 
-        if(request.ToDate.HasValue){
+        if (request.ToDate.HasValue)
+        {
             query = query.Where(b => b.CreatedAt <= request.ToDate);
         }
 
-        if(request.pulished){
+        if (request.pulished)
+        {
             query = query.Where(b => b.Published_at != null);
+            if (request.isLatest)
+            {
+                query = query.Where(b => b.Published_at >= DateTime.UtcNow);
+            }
         }
 
-        query = request.sort?.ToLower() switch {
+
+        query = request.sort?.ToLower() switch
+        {
             "title" => request.IsAscending
                 ? query.OrderBy(b => b.Title)
                 : query.OrderByDescending(b => b.Title),
@@ -82,7 +91,8 @@ public class GetBooksQueryHandler : IRequestHandler<GetBooksQuery, PageResponse<
 
         var data = books.Adapt<List<BookDto>>();
 
-        return new PageResponse<BookDto> {
+        return new PageResponse<BookDto>
+        {
             Data = data,
             TotalCount = totalCount,
             PageNumber = request.Page,

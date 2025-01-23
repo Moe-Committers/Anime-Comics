@@ -1,7 +1,6 @@
 using anime_comics.DB;
 using anime_comics.Utils.DTOs.Books;
 using anime_comics.Utils.Helpers.Exceptions;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
