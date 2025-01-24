@@ -7,6 +7,7 @@ using anime_comics.Utils.Attributes;
 using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Category;
 using anime_comics.Utils.Enum;
+using anime_comics.Utils.Helpers.ResponseHelper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,38 +42,38 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpGet("get-active/{id}")]
-    public async Task<ActionResult<CategoryDetailDto>> GetActiveCategory(long id)
+    public async Task<ActionResult<ApiResponse<CategoryDetailDto>>> GetActiveCategory(long id)
     {
         var query = new GetCategoryQuery();
         var newQuery = query with {Id = id , Toggle = true};
         var category = await _mediator.Send(newQuery);
-        return Ok(category);
+        return Ok(ResHelper.Success(category));
     }
 
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpGet("{id}")]
-    public async Task<ActionResult<CategoryDetailDto>> GetCategory(long id)
+    public async Task<ActionResult<ApiResponse<CategoryDetailDto>>> GetCategory(long id)
     {
         var query = new GetCategoryQuery();
         var newQuery = query with {Id = id , Toggle = false};
         var category = await _mediator.Send(newQuery);
-        return Ok(category);
+        return Ok(ResHelper.Success(category));
     }
 
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpPost]
-    public async Task<ActionResult<long>> CreateCategory([FromForm] CreateCategoryCommand command)
+    public async Task<ActionResult<ApiResponse<object>>> CreateCategory([FromForm] CreateCategoryCommand command)
     {
         var id = await _mediator.Send(command);
-        return Ok(id);
+        return id > 0 ? Ok(ResHelper.Success<ActionResult>()) : NotFound(ResHelper.Error<ActionResult>());
     }
 
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateCategory(long id, [FromForm] UpdateCategory req)
+    public async Task<ActionResult<ApiResponse<object>>> UpdateCategory(long id, [FromForm] UpdateCategory req)
     {
         var command = new UpdateCategoryCommand {
             Id = id,
@@ -82,16 +83,16 @@ public class CategoriesController : ControllerBase
             Order = req.Order
         };
         var success = await _mediator.Send(command);
-        return success ? NoContent() : NotFound();
+        return success ? Ok(ResHelper.Success<ActionResult>()) : NotFound(ResHelper.Error<ActionResult>());
     }
 
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteCategory(long id)
+    public async Task<ActionResult<ApiResponse<object>>> DeleteCategory(long id)
     {
         var command = new DeleteCategoryCommand(id);
         var success = await _mediator.Send(command);
-        return success ? NoContent() : NotFound();
+        return success ? Ok(ResHelper.Success<ActionResult>()) : NotFound(ResHelper.Error<ActionResult>());
     }
 }

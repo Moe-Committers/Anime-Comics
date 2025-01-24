@@ -5,7 +5,7 @@ using MediatR;
 
 namespace anime_comics.Features.Category.Queries.GetCategories;
 
-public record GetCategoriesQuery : IRequest<PageResponse<CategoryDto>>{
+public record GetCategoriesQuery : IRequest<ApiResponse<List<CategoryDto>>>{
     [JsonIgnore]
     public bool Toggle {get; set;}
     public string? Search {get; set;}

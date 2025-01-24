@@ -2,13 +2,14 @@ using anime_comics.DB;
 using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Category;
 using anime_comics.Utils.Enum;
+using anime_comics.Utils.Helpers.ResponseHelper;
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace anime_comics.Features.Category.Queries.GetCategories;
 
-public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, PageResponse<CategoryDto>>
+public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, ApiResponse<List<CategoryDto>>>
 {
     private readonly database _db;
 
@@ -17,7 +18,7 @@ public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, Pag
         _db = db;
     }
 
-    public async Task<PageResponse<CategoryDto>> Handle(GetCategoriesQuery request, CancellationToken ct)
+    public async Task<ApiResponse<List<CategoryDto>>> Handle(GetCategoriesQuery request, CancellationToken ct)
     {
         var query = _db.categories
             .Include(c => c.Books)
@@ -38,7 +39,8 @@ public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, Pag
             query = query.Where(c => c.CreatedAt >= request.FromDate);
         }
 
-        if(request.Toggle){
+        if (request.Toggle)
+        {
             query = query.Where(c => c.status == Status.Active);
             query = query.OrderBy(c => c.Order);
         }
@@ -80,13 +82,16 @@ public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, Pag
 
         var data = categories.Adapt<List<CategoryDto>>();
 
-        return new PageResponse<CategoryDto>
+        return new ApiResponse<List<CategoryDto>>
         {
             Data = data,
-            TotalCount = totalCount,
-            PageNumber = request.Page,
-            PageSize = request.PageSize,
-            TotalPage = (int)Math.Ceiling(totalCount / (double)request.PageSize)
+            Paginate = new PaginateResponse
+            {
+                TotalCount = totalCount,
+                PageNumber = request.Page,
+                PageSize = request.PageSize,
+                TotalPage = (int)Math.Ceiling(totalCount / (double)request.PageSize)
+            }
         };
     }
 }

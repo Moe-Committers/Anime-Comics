@@ -1,13 +1,14 @@
 using anime_comics.DB;
 using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Books;
+using anime_comics.Utils.Helpers.ResponseHelper;
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace anime_comics.Features.Page.Queries.GetBook;
 
-public class GetBookPagesQueryHandler : IRequestHandler<GetBookPagesQuery, PageResponse<PageDto>>
+public class GetBookPagesQueryHandler : IRequestHandler<GetBookPagesQuery, ApiResponse<List<PageDto>>>
 {
     private readonly database _db;
 
@@ -16,7 +17,7 @@ public class GetBookPagesQueryHandler : IRequestHandler<GetBookPagesQuery, PageR
         _db = db;
     }
 
-    public async Task<PageResponse<PageDto>> Handle(GetBookPagesQuery request, CancellationToken ct)
+    public async Task<ApiResponse<List<PageDto>>> Handle(GetBookPagesQuery request, CancellationToken ct)
     {
         var query = _db.pages.Where(p => p.BookId == request.BookId).AsQueryable();
         var totalCount = await _db.pages.CountAsync();
@@ -30,12 +31,16 @@ public class GetBookPagesQueryHandler : IRequestHandler<GetBookPagesQuery, PageR
             })
             .ToListAsync(ct);
         var data = pages.Adapt<List<PageDto>>();
-        return new PageResponse<PageDto>{
+        return new ApiResponse<List<PageDto>>
+        {
             Data = data,
-            TotalCount = totalCount,
-            PageNumber = request.Page,
-            PageSize = request.PageSize,
-            TotalPage = (int)Math.Ceiling(totalCount / (double)request.PageSize)
+            Paginate = new PaginateResponse
+            {
+                TotalCount = totalCount,
+                PageNumber = request.Page,
+                PageSize = request.PageSize,
+                TotalPage = (int)Math.Ceiling(totalCount / (double)request.PageSize)
+            }
         };
     }
 }

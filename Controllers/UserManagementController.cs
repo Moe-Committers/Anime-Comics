@@ -5,6 +5,7 @@ using anime_comics.Utils.Enum;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using anime_comics.Utils.Helpers.ResponseHelper;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -17,8 +18,8 @@ public class UserManagementController : ControllerBase {
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpPut("toggle/{id}")]
-    public async Task<ActionResult<UserDto>> ToggleUserStatus(ToggleActiveCommand command){
+    public async Task<ActionResult<ApiResponse<UserDto>>> ToggleUserStatus(ToggleActiveCommand command){
         var response = await _mediator.Send(command);
-        return Ok(response);
+        return Ok(ResHelper.Success(response));
     }
 }

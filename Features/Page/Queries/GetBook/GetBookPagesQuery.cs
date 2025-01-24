@@ -4,7 +4,7 @@ using MediatR;
 
 namespace anime_comics.Features.Page.Queries.GetBook;
 
-public record GetBookPagesQuery : IRequest<PageResponse<PageDto>> {
+public record GetBookPagesQuery : IRequest<ApiResponse<List<PageDto>>> {
     public long BookId {get; init;}
     public int Page {get; init; } = 1;
     public int PageSize {get; init;} = 10;

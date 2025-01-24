@@ -5,7 +5,7 @@ using MediatR;
 
 namespace anime_comics.Features.Book.Queries.GetBooks;
 
-public record GetBooksQuery : IRequest<PageResponse<BookDto>>
+public record GetBooksQuery : IRequest<ApiResponse<List<BookDto>>>
 {
     [JsonIgnore]
     public bool pulished {get; set;}

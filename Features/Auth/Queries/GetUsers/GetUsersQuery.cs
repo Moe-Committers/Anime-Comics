@@ -1,10 +1,9 @@
-using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Authentication;
 using MediatR;
 
 namespace anime_comics.Features.Auth.Queries.GetUsers;
 
-public record GetUsersQuery : IRequest<PageResponse<UserDto>> {
+public record GetUsersQuery : IRequest<ApiResponse<List<UserDto>>> {
     public string? Search {get; set;}
     public long? Id {get; set;}
     public DateTime? FromDate {get; set;}

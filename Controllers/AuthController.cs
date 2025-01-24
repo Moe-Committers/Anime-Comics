@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using anime_comics.Features.Auth.Commands.UpdateUserPassword;
+using anime_comics.Utils.Helpers.ResponseHelper;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -27,45 +28,45 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<AuthResponse>> Register(RegisterCommand command)
+    public async Task<ActionResult<ApiResponse<AuthResponse>>> Register(RegisterCommand command)
     {
         var response = await _mediator.Send(command);
         
         SetRefreshTokenCookie(response.RefreshToken);
         
-        return Ok(response);
+        return Ok(ResHelper.Success(response));
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AuthResponse>> Login(LoginCommand command)
+    public async Task<ActionResult<ApiResponse<AuthResponse>>> Login(LoginCommand command)
     {
         var response = await _mediator.Send(command);
         
         SetRefreshTokenCookie(response.RefreshToken);
         
-        return Ok(response);
+        return Ok(ResHelper.Success(response));
     }
 
     [AuthorizeStatus(Status.Active)]
     [HttpGet("me")]
-    public async Task<ActionResult<UserDto>> GetUser()
+    public async Task<ActionResult<ApiResponse<UserDto>>> GetUser()
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
         var query = new GetUserQuery(userId);
         var user = await _mediator.Send(query);
-        return Ok(user);
+        return Ok(ResHelper.Success(ResHelper.Success(user)));
     }
 
     [AuthorizeStatus(Status.Active)]
     [HttpPost("logout")]
-    public async Task<ActionResult> Logout()
+    public async Task<ApiResponse<ActionResult>> Logout()
     {
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
         var refreshToken = Request.Cookies["refreshToken"];
         
         if (string.IsNullOrEmpty(refreshToken))
         {
-            return BadRequest("Refresh token not found");
+            return ResHelper.Error<ActionResult>("Refresh token not found");
         }
 
         var command = new LogoutCommand(userId, refreshToken);
@@ -74,48 +75,48 @@ public class AuthController : ControllerBase
         if (result)
         {
             Response.Cookies.Delete("refreshToken");
-            return Ok();
+            return ResHelper.Success<ActionResult>(null, null, "Success");
         }
         
-        return BadRequest();
+        return ResHelper.Error<ActionResult>("Errors!");
     }
 
     [Authorize]
     [HttpPut("change-avatar")]
-    public async Task<ActionResult<UserDto>> ChangeAvatar([FromForm] UpdateUserProfile req){
+    public async Task<ActionResult<ApiResponse<UserDto>>> ChangeAvatar([FromForm] UpdateUserProfile req){
         var command = new UpdateProfileCommand();
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
         var newQuery = command with {Id = userId , Name = req.Name , Img = req.FileImg};
         var response = await _mediator.Send(newQuery);
-        return Ok(response);
+        return Ok(ResHelper.Success(response));
     }
 
     [Authorize]
     [HttpPut("change-password")]
-    public async Task<ActionResult<UserDto>> ChangePassword(UpdateUserPassCommand command){
+    public async Task<ActionResult<ApiResponse<object>>> ChangePassword(UpdateUserPassCommand command){
         var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
         var newQuery = command with {Id = userId};
-        var response = await _mediator.Send(newQuery);
-        return Ok(response);
+        await _mediator.Send(newQuery);
+        return Ok(ResHelper.Success<ActionResult>());
     }
 
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpGet]
-    public async Task<ActionResult<PageResponse<UserDto>>> GetUsers([FromQuery] GetUsersQuery query){
+    public async Task<ActionResult<ApiResponse<List<UserDto>>>> GetUsers([FromQuery] GetUsersQuery query){
         var response = await _mediator.Send(query);
-        return Ok(response);
+        return Ok(ResHelper.Success(response.Data , response.Paginate));
 
     }
 
     [HttpPost("refresh-token")]
-    public async Task<ActionResult<AuthResponse>> RefreshToken()
+    public async Task<ActionResult<ApiResponse<AuthResponse>>> RefreshToken()
     {
         var refreshToken = Request.Cookies["refreshToken"];
         
         if (string.IsNullOrEmpty(refreshToken))
         {
-            return BadRequest("Refresh token not found");
+            return NotFound(ResHelper.Error<ActionResult>("Refresh token not found"));
         }
 
         var command = new RefreshTokenCommand(refreshToken);
@@ -123,7 +124,7 @@ public class AuthController : ControllerBase
 
         SetRefreshTokenCookie(response.RefreshToken);
         
-        return Ok(response);
+        return Ok(ResHelper.Success(response));
     }
 
     private void SetRefreshTokenCookie(string refreshToken)

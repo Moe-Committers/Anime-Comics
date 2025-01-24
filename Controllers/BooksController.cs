@@ -30,78 +30,78 @@ public class BooksController : ControllerBase
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpPut("publish/{id}")]
-    public async Task<ActionResult<bool>> Publishing(long id, PublishBookCommand command)
+    public async Task<ActionResult<ApiResponse<object>>> Publishing(long id, PublishBookCommand command)
     {
         var updateCommand = command with { Id = id };
         var success = await _mediator.Send(updateCommand);
-        return success ? NoContent() : NotFound();
+        return success ? Ok(ResHelper.Success<ActionResult>()) : NotFound(ResHelper.Error<ActionResult>());
     }
 
     [HttpGet("published")]
-    public async Task<ActionResult<ApiResponse<PageResponse<BookDto>>>> GetPublishedBooks([FromQuery] GetBooksQuery query)
+    public async Task<ActionResult<ApiResponse<List<BookDto>>>> GetPublishedBooks([FromQuery] GetBooksQuery query)
     {
         var newQuery = query with { pulished = true };
         var books = await _mediator.Send(newQuery);
-        return Ok(ResHelper.Success(books));
+        return Ok(ResHelper.Success(books.Data , books.Paginate));
     }
 
     [HttpGet("Popular-updates")]
-    public async Task<ActionResult<List<BookDetailDto>>> GetPopularUpdates([FromQuery] GetPopularBookQuery query){
+    public async Task<ActionResult<ApiResponse<List<BookDetailDto>>>> GetPopularUpdates([FromQuery] GetPopularBookQuery query){
         var data = await _mediator.Send(query);
-        return Ok(data);
+        return Ok(ResHelper.Success(data));
     }
 
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpGet]
-    public async Task<ActionResult<PageResponse<BookDto>>> GetBooks([FromQuery] GetBooksQuery query)
+    public async Task<ActionResult<ApiResponse<List<BookDto>>>> GetBooks([FromQuery] GetBooksQuery query)
     {
         var newQuery = query with { pulished = false };
         var books = await _mediator.Send(newQuery);
-        return Ok(books);
+        return Ok(ResHelper.Success(books.Data ,books.Paginate));
     }
 
     [HttpGet("published/{id}")]
-    public async Task<ActionResult<BookDetailDto>> GetPublishedBook(long id)
+    public async Task<ActionResult<ApiResponse<BookDetailDto>>> GetPublishedBook(long id)
     {
         var query = new GetBookQuery();
         var newQuery = query with { Id = id, published = true };
         var book = await _mediator.Send(newQuery);
-        return Ok(book);
+        return Ok(ResHelper.Success(book));
     }
 
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpGet("{id}")]
-    public async Task<ActionResult<BookDetailDto>> GetBook(long id)
+    public async Task<ActionResult<ApiResponse<BookDetailDto>>> GetBook(long id)
     {
         var query = new GetBookQuery();
         var newQuery = query with { Id = id, published = false };
         var book = await _mediator.Send(newQuery);
-        return Ok(book);
+        return Ok(ResHelper.Success(book));
     }
 
     [HttpGet("showcase")]
-    public async Task<ActionResult<ShowcaseResponse>> GetShowcase()
+    public async Task<ActionResult<ApiResponse<ShowcaseResponse>>> GetShowcase()
     {
         var query = new GetShowcaseQuery();
         var showcase = await _mediator.Send(query);
-        return Ok(showcase);
+        return Ok(ResHelper.Success(showcase));
     }
 
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpPost]
-    public async Task<ActionResult<long>> CreateBook([FromForm] CreateBookCommand command)
+    public async Task<ActionResult<ApiResponse<object>>> CreateBook([FromForm] CreateBookCommand command)
     {
         var id = await _mediator.Send(command);
-        return Ok(id);
+        return id > 0 ? Ok(ResHelper.Success<ActionResult>()) : BadRequest(ResHelper.Error<ActionResult>());
     }
 
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateBook(long id, [FromForm] UpdateBook req)
+    public async Task<ActionResult<ApiResponse<object>>> UpdateBook(long id, [FromForm] UpdateBook req)
     {
         var command = new UpdateBookCommand {
             Id = id,
@@ -112,16 +112,16 @@ public class BooksController : ControllerBase
             CategoryIds = req.CategoryIds
         };
         var success = await _mediator.Send(command);
-        return success ? NoContent() : NotFound();
+        return success ? Ok(ResHelper.Success<ActionResult>()) : NotFound(ResHelper.Error<ActionResult>());
     }
 
     [Authorize(Roles = "Admin")]
     [AuthorizeStatus(Status.Active)]
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteBook(long id)
+    public async Task<ActionResult<ApiResponse<object>>> DeleteBook(long id)
     {
         var command = new DeleteBookCommand(id);
         var success = await _mediator.Send(command);
-        return success ? NoContent() : NotFound();
+        return success ? Ok(ResHelper.Success<ActionResult>()) : NotFound(ResHelper.Success<ActionResult>());
     }
 }
