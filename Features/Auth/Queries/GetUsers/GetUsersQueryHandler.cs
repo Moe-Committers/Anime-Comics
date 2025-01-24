@@ -1,4 +1,5 @@
 using anime_comics.DB;
+using anime_comics.Models;
 using anime_comics.Utils.DTOs.Authentication;
 using anime_comics.Utils.Enum;
 using anime_comics.Utils.Helpers.Extensions;
@@ -58,8 +59,6 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, ApiResponse<L
             _ => query.OrderByDescending(u => u.CreatedAt)
         };
 
-        var totalCount = await _db.users.CountAsync();
-
-        return _db.users.CreatePaginatedResponse<UserDto>(request.Page, request.PageSize , ct);
+        return await query.CreatePaginatedResponse<UserDto, Users>(request.Page, request.PageSize , ct);
     }
 }

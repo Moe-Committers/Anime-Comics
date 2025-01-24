@@ -1,7 +1,9 @@
 using anime_comics.DB;
+using anime_comics.Models;
 using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Category;
 using anime_comics.Utils.Enum;
+using anime_comics.Utils.Helpers.Extensions;
 using anime_comics.Utils.Helpers.ResponseHelper;
 using Mapster;
 using MediatR;
@@ -64,34 +66,6 @@ public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, Api
             _ => query.OrderByDescending(c => c.CreatedAt)
         };
 
-        var totalCount = await _db.categories.CountAsync();
-
-        var categories = await query
-        .Skip((request.Page - 1) * request.PageSize)
-        .Take(request.PageSize)
-        .Select(c => new CategoryDto
-        {
-            Id = c.Id,
-            Name = c.Name,
-            status = c.status,
-            Icon = c.Icon,
-            Order = c.Order,
-            BookCount = c.Books.Count
-        })
-        .ToListAsync();
-
-        var data = categories.Adapt<List<CategoryDto>>();
-
-        return new ApiResponse<List<CategoryDto>>
-        {
-            Data = data,
-            Paginate = new PaginateResponse
-            {
-                TotalCount = totalCount,
-                PageNumber = request.Page,
-                PageSize = request.PageSize,
-                TotalPage = (int)Math.Ceiling(totalCount / (double)request.PageSize)
-            }
-        };
+        return await query.CreatePaginatedResponse<CategoryDto , Categories>(request.Page , request.PageSize , ct);
     }
 }

@@ -1,7 +1,7 @@
 using anime_comics.DB;
-using anime_comics.Utils.DTOs;
+using anime_comics.Models;
 using anime_comics.Utils.DTOs.Books;
-using anime_comics.Utils.Helpers.ResponseHelper;
+using anime_comics.Utils.Helpers.Extensions;
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -51,7 +51,7 @@ public class GetBooksQueryHandler : IRequestHandler<GetBooksQuery, ApiResponse<L
             query = query.Where(b => b.Published_at != null);
             if (request.isLatest)
             {
-                query = query.Where(b => b.Published_at >= DateTime.UtcNow);
+                query = query.Where(b => b.Published_at >= DateTime.UtcNow.Date);
             }
         }
 
@@ -73,35 +73,6 @@ public class GetBooksQueryHandler : IRequestHandler<GetBooksQuery, ApiResponse<L
             _ => query.OrderByDescending(b => b.CreatedAt)
         };
 
-        var totalCount = await _db.books.CountAsync();
-
-        var books = await query
-        .Skip((request.Page - 1) * request.PageSize)
-        .Take(request.PageSize)
-        .Select(b => new BookDto
-        {
-            Id = b.Id,
-            Title = b.Title,
-            Author = b.Author,
-            ImageUrl = b.ImageUrl,
-            Published_at = b.Published_at,
-            UserName = b.Users.Name,
-            Fav = b.Fav
-        })
-        .ToListAsync(ct);
-
-        var data = books.Adapt<List<BookDto>>();
-
-        return new ApiResponse<List<BookDto>>
-        {
-            Data = data,
-            Paginate = new PaginateResponse
-            {
-                TotalCount = totalCount,
-                PageNumber = request.Page,
-                PageSize = request.PageSize,
-                TotalPage = (int)Math.Ceiling(totalCount / (double)request.PageSize)
-            }
-        };
+        return await query.CreatePaginatedResponse<BookDto , Books>(request.Page , request.PageSize , ct);
     }
 }
