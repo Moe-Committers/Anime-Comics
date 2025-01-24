@@ -11,6 +11,7 @@ using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Books;
 using anime_comics.Utils.DTOs.ShowcaseResponse;
 using anime_comics.Utils.Enum;
+using anime_comics.Utils.Helpers.ResponseHelper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,11 +38,11 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet("published")]
-    public async Task<ActionResult<PageResponse<BookDto>>> GetPublishedBooks([FromQuery] GetBooksQuery query)
+    public async Task<ActionResult<ApiResponse<PageResponse<BookDto>>>> GetPublishedBooks([FromQuery] GetBooksQuery query)
     {
         var newQuery = query with { pulished = true };
         var books = await _mediator.Send(newQuery);
-        return Ok(books);
+        return Ok(ResHelper.Success(books));
     }
 
     [HttpGet("Popular-updates")]
