@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/auth.store';
-import { BookOpen, Search, Settings, Moon, ChevronDown } from 'lucide-react';
+import { BookOpen, Search, Settings, Moon, ChevronDown, MenuIcon } from 'lucide-react';
 import { useClickOutside } from '@/hooks/useClickOutside';
 
 export function Navbar() {
@@ -13,6 +13,7 @@ export function Navbar() {
   useClickOutside(dropdownRef, () => setIsDropdownOpen(false));
 
   useEffect(() => {
+    console.log(user)
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
@@ -26,28 +27,19 @@ export function Navbar() {
     
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Left side */}
-          <div className="flex items-center gap-8">
+
+          <div className="flex items-center gap-5">
+          <Link href="/" className="flex items-center gap-2">
+              <MenuIcon className="h-8 w-8 text-white"/>
+            </Link>
             <Link href="/" className="flex items-center gap-2">
               <BookOpen className="h-8 w-8 text-orange-500" />
               <span className="text-xl font-bold text-white">MangaVerse</span>
             </Link>
-            <div className="hidden md:flex items-center gap-6">
-              {['Browse', 'Latest', 'Categories'].map((item) => (
-                <Link
-                  key={item}
-                  href={`/${item.toLowerCase()}`}
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  {item}
-                </Link>
-              ))}
-            </div>
           </div>
 
-          {/* Right side */}
           <div className="flex items-center gap-4">
-            {/* Search */}
+
             <div className="relative">
               <input
                 type="text"
@@ -57,8 +49,7 @@ export function Navbar() {
               />
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             </div>
-
-            {/* User Menu */}
+            <button onClick={logout}>click logout test</button>
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -73,12 +64,11 @@ export function Navbar() {
 
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-[#2A2A2A] rounded-md shadow-lg overflow-hidden">
-                    {/* Header */}
+
                     <div className="px-4 py-3 border-b border-gray-700">
                       <p className="text-white text-sm font-medium">Guest</p>
                     </div>
 
-                    {/* Settings Section */}
                     <div className="p-2 border-b border-gray-700">
                       <button className="w-full px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded flex items-center gap-2">
                         <Settings className="h-4 w-4" />
@@ -90,7 +80,6 @@ export function Navbar() {
                       </button>
                     </div>
 
-                    {/* Language Settings */}
                     <div className="p-2 border-b border-gray-700">
                       <div className="px-3 py-2">
                         <p className="text-sm text-gray-300 mb-2">Interface Language</p>
@@ -106,7 +95,6 @@ export function Navbar() {
                       </div>
                     </div>
 
-                    {/* Auth Buttons */}
                     <div className="p-2">
                       <button
                         onClick={logout}

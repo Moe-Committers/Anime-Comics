@@ -1,7 +1,7 @@
 import { useShowcase } from "@/hooks/useShowcase";
+import { CarouselWithDots } from "./CarouselDots";
 import { ShowcaseSkeleton } from "./ShowcaseSkeleton";
 // import { ErrorDisplay } from '../common/ErrorDisplay';
-import { CarouselWithDots } from "./CarouselDots";
 
 export function ShowcaseSection() {
   const { data, error, loading } = useShowcase();
@@ -14,14 +14,14 @@ export function ShowcaseSection() {
   //     return <ErrorDisplay message="Failed to load showcase" />;
   //   }
 
-  if (!data?.sections?.length) {
+  if (!data?.data?.sections?.length) {
+    console.log(data)
     return null;
   }
 
   return (
     <div className="space-y-12">
-      <p className="text-white">{JSON.stringify(data)}</p>
-      {data.sections.map((section) => (
+      {data.data.sections.map((section) => (
         <div key={section.id}>
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-white">{section.title}</h2>

@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/layout/Navbar";
-import { FeaturedCarousel } from "@/components/manga/FeaturedCarousel";
-import { LatestUpdatesGrid } from "@/components/manga/LatestUpdatesGrid";
-import { ShowcaseSection } from "@/components/manga/ShowcaseSection";
+import { FeaturedCarousel } from "@/components/manga/Features/FeaturedCarousel";
+import { LatestUpdates } from "@/components/manga/LatestUpdates/LatestUpdates";
+import { ShowcaseSection } from "@/components/manga/Showcases/ShowcaseSection";
 
 export default function Home() {
 
@@ -24,7 +24,7 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <FeaturedCarousel />
 
-        <LatestUpdatesGrid />
+        <LatestUpdates />
 
         <ShowcaseSection />
       </main>
