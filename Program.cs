@@ -23,6 +23,7 @@ builder.Services.AddMediatR(config =>
 builder.Services.AddAuthorization(options => {
     options.AddPolicy($"Status:{Status.Active}" , policy => policy.RequireClaim("status" , Status.Active.ToString()));
 });
+builder.Services.UseRedisService(builder.Configuration);
 builder.Services.AddAuth(builder.Configuration);
 var connectionString = builder.Configuration.GetConnectionString("Database");
 builder.Services.AddDbContext<database>(option =>{
