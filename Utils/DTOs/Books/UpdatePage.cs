@@ -1,10 +1,9 @@
 namespace anime_comics.Utils.DTOs.Books;
 
-public class UpdatePage
+public class UpdatePageDto
 {
-    public int? PageNumber { get; init; }
-    public IFormFile? ImageUrl { get; init; }
+    public int? PageNumber { get; set; }
+    public IFormFile? Image { get; set; }
 }
-
 
 

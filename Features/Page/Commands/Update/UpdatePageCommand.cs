@@ -5,7 +5,8 @@ namespace anime_comics.Features.Page.Commands.Update;
 
 public record UpdatePageCommand : IRequest<PageDto>
 {
-    public long Id { get; init; }
+    public long ChapterId { get; init; }
+    public long PageId { get; init; }
     public int? PageNumber { get; init; }
-    public IFormFile? ImageUrl { get; init; }
+    public IFormFile? Image { get; init; }
 }

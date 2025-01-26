@@ -16,6 +16,8 @@ public class database : DbContext {
     public DbSet<RefreshTokens> refreshTokens {get; set;}
     public DbSet<Categories> categories {get; set;}
     public DbSet<SiteSetting> sitesettings {get; set;}
+    public DbSet<Volumes> volumes {get; set;}
+    public DbSet<Chapters> Chapters {get; set;}
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

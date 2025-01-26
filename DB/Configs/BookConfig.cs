@@ -16,7 +16,7 @@ public class BookConfig : IEntityTypeConfiguration<Books>
         builder.HasMany(b => b.Categories)
                .WithMany(c => c.Books);
 
-        builder.HasMany(b => b.Pages)
+        builder.HasMany(b => b.Volumes)
                .WithOne(p => p.Book)
                .HasForeignKey(p => p.BookId)
                .OnDelete(DeleteBehavior.Cascade);

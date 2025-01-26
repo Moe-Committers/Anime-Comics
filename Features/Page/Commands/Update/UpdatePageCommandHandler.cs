@@ -12,6 +12,7 @@ public class UpdatePageCommandHandler : IRequestHandler<UpdatePageCommand, PageD
 {
     private readonly database _db;
     private readonly IImageService _imageService;
+
     public UpdatePageCommandHandler(database db, IImageService imageService)
     {
         _db = db;
@@ -20,23 +21,43 @@ public class UpdatePageCommandHandler : IRequestHandler<UpdatePageCommand, PageD
 
     public async Task<PageDto> Handle(UpdatePageCommand request, CancellationToken ct)
     {
-        var page = await _db.pages.FirstOrDefaultAsync(p => p.Id == request.Id, ct);
+        var page = await _db.pages
+            .Include(p => p.Chapter)
+                .ThenInclude(c => c.Volume)
+            .FirstOrDefaultAsync(p => p.Id == request.PageId &&
+                                    p.ChapterId == request.ChapterId, ct);
 
-        if (page == null) throw new NotFoundExceptions("Page not founded!");
+        if (page == null)
+            throw new NotFoundExceptions("Page not found");
 
-        page.PageNumber = request.PageNumber ?? page.PageNumber;
-        if (request.ImageUrl != null)
+        if (request.PageNumber.HasValue && request.PageNumber != page.PageNumber)
+        {
+            var existingPage = await _db.pages
+                .FirstOrDefaultAsync(p => p.ChapterId == request.ChapterId &&
+                                        p.PageNumber == request.PageNumber, ct);
+
+            if (existingPage != null)
+                throw new BadRequestExceptions($"Page number {request.PageNumber} already exists in this chapter");
+
+            page.PageNumber = request.PageNumber.Value;
+        }
+
+        if (request.Image != null)
         {
             if (!string.IsNullOrEmpty(page.ImageUrl))
             {
                 _imageService.DeleteImage(page.ImageUrl);
             }
-            var imagePath = $"book-{page.BookId}/page-{page.PageNumber}";
-            page.ImageUrl = await _imageService.UploadImage(request.ImageUrl, imagePath);
-        }
-        page.UpdatedAt = DateTime.Now;
 
+            page.ImageUrl = await _imageService.UploadImage(
+                request.Image,
+                $"book-{page.Chapter.Volume.BookId}/volume-{page.Chapter.Volume.VolumeNo}/chapter-{page.Chapter.ChapNo}/page-{page.PageNumber}"
+            );
+        }
+
+        page.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync(ct);
+
         return page.Adapt<PageDto>();
     }
 }

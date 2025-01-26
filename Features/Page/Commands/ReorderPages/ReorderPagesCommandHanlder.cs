@@ -10,6 +10,7 @@ namespace anime_comics.Features.Page.Commands.ReorderPages;
 public class ReorderPagesCommandHandler : IRequestHandler<ReorderPagesCommand, List<PageDto>>
 {
     private readonly database _db;
+
     public ReorderPagesCommandHandler(database db)
     {
         _db = db;
@@ -17,16 +18,16 @@ public class ReorderPagesCommandHandler : IRequestHandler<ReorderPagesCommand, L
 
     public async Task<List<PageDto>> Handle(ReorderPagesCommand request, CancellationToken ct)
     {
-        var book = await _db.books
-            .Include(b => b.Pages)
-            .FirstOrDefaultAsync(b => b.Id == request.BookId, ct);
+        var pages = await _db.pages
+            .Where(p => p.ChapterId == request.ChapterId)
+            .ToListAsync(ct);
 
-        if (book == null)
-            throw new NotFoundExceptions("Book not founded!");
+        if (!pages.Any())
+            throw new NotFoundExceptions("No pages found to update!");
 
         foreach (var order in request.NewOrder)
         {
-            var page = book.Pages.FirstOrDefault(p => p.Id == order.PageId);
+            var page = pages.FirstOrDefault(p => p.Id == order.PageId);
             if (page != null)
             {
                 page.PageNumber = order.NewPageNumber;
@@ -37,7 +38,7 @@ public class ReorderPagesCommandHandler : IRequestHandler<ReorderPagesCommand, L
         await _db.SaveChangesAsync(ct);
 
         var updatedPages = await _db.pages
-            .Where(p => p.BookId == request.BookId)
+            .Where(p => p.ChapterId == request.ChapterId)
             .OrderBy(p => p.PageNumber)
             .ToListAsync(ct);
 

@@ -217,9 +217,6 @@ namespace anime_comics.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Order")
-                        .HasColumnType("integer");
-
                     b.Property<int>("PageNumber")
                         .HasColumnType("integer");
 
@@ -281,6 +278,36 @@ namespace anime_comics.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("refreshTokens");
+                });
+
+            modelBuilder.Entity("anime_comics.Models.SiteSetting", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Logo")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("sitesettings");
                 });
 
             modelBuilder.Entity("anime_comics.Models.Users", b =>

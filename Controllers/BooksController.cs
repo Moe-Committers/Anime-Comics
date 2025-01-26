@@ -7,7 +7,6 @@ using anime_comics.Features.Book.Queries.GetBooks;
 using anime_comics.Features.Book.Queries.GetPopularBook;
 using anime_comics.Features.Book.Queries.GetShowcase;
 using anime_comics.Utils.Attributes;
-using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Books;
 using anime_comics.Utils.DTOs.ShowcaseResponse;
 using anime_comics.Utils.Enum;
