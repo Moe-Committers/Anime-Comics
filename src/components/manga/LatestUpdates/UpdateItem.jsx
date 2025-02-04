@@ -9,7 +9,7 @@ export function UpdateItem({ book , timeSince }) {
 
         <div className="flex-shrink-0">
           <img 
-            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${book.imageUrl}`} 
+            src={`${process.env.NEXT_PUBLIC_API_URL}${book.imageUrl}`} 
             alt={book.title}
             className="w-[60px] h-[80px] object-cover rounded"
           />

@@ -13,7 +13,6 @@ export function Navbar() {
   useClickOutside(dropdownRef, () => setIsDropdownOpen(false));
 
   useEffect(() => {
-    console.log(user)
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
@@ -49,7 +48,6 @@ export function Navbar() {
               />
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             </div>
-            <button onClick={logout}>click logout test</button>
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <button

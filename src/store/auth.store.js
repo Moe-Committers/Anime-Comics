@@ -4,30 +4,31 @@ import { create } from "zustand";
 export const useAuthStore = create((set) => ({
   user: null,
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true,
   error: null,
 
   login: async (credentials) => {
     try {
       set({ isLoading: true, error: null });
       const response = await authService.login(credentials);
-      
+
       if (!response.success) {
-        throw new Error(response.message || 'Login failed');
+        throw new Error(response.message || "Login failed");
       }
 
-      localStorage.setItem('accessToken', response.data.accessToken);
-      set({ 
+      localStorage.setItem("accessToken", response.data.accessToken);
+      set({
         user: response.data.user,
         isAuthenticated: true,
-        isLoading: false
+        isLoading: false,
       });
     } catch (error) {
-      set({ 
-        error: error?.response?.data?.message || error.message || 'Login failed',
+      set({
+        error:
+          error?.response?.data?.message || error.message || "Login failed",
         isLoading: false,
         isAuthenticated: false,
-        user: null
+        user: null,
       });
       throw error;
     }
@@ -39,21 +40,24 @@ export const useAuthStore = create((set) => ({
       const response = await authService.register(credentials);
 
       if (!response.success) {
-        throw new Error(response.message || 'Registration failed');
+        throw new Error(response.message || "Registration failed");
       }
 
-      localStorage.setItem('accessToken', response.data.accessToken);
-      set({ 
+      localStorage.setItem("accessToken", response.data.accessToken);
+      set({
         user: response.data.user,
         isAuthenticated: true,
-        isLoading: false
+        isLoading: false,
       });
     } catch (error) {
-      set({ 
-        error: error?.response?.data?.message || error.message || 'Registration failed',
+      set({
+        error:
+          error?.response?.data?.message ||
+          error.message ||
+          "Registration failed",
         isLoading: false,
         isAuthenticated: false,
-        user: null
+        user: null,
       });
       throw error;
     }
@@ -61,21 +65,17 @@ export const useAuthStore = create((set) => ({
 
   logout: async () => {
     try {
-      const response = await authService.logout();
-      
-      if (!response.success) {
-        throw new Error(response.message || 'Logout failed');
-      }
-
-      localStorage.removeItem('accessToken');
-      set({ 
-        user: null, 
+      await authService.logout();
+      localStorage.removeItem("accessToken");
+      set({
+        user: null,
         isAuthenticated: false,
-        error: null
+        error: null,
       });
     } catch (error) {
-      set({ 
-        error: error?.response?.data?.message || error.message || 'Logout failed'
+      set({
+        error:
+          error?.response?.data?.message || error.message || "Logout failed",
       });
       throw error;
     }
@@ -84,26 +84,44 @@ export const useAuthStore = create((set) => ({
   checkAuth: async () => {
     try {
       set({ isLoading: true });
-      const response = await authService.me();
+      const token = localStorage.getItem("accessToken");
 
-      if (!response.success) {
-        throw new Error(response.message || 'Authentication check failed');
+      if (!token) {
+        set({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+        });
+        return;
       }
 
-      set({ 
-        user: response.data.user,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null
-      });
+      const response = await authService.me();
+      if (response.success) {
+        set({
+          user: response.data,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+        });
+      } else {
+        set({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: "Authentication failed",
+        });
+      }
     } catch (error) {
-      localStorage.removeItem('accessToken');
-      set({ 
+      set({
         user: null,
         isAuthenticated: false,
         isLoading: false,
-        error: error?.response?.data?.message || error.message || 'Authentication check failed'
+        error: error?.response?.data?.message || "Authentication check failed",
       });
     }
-  }
+  },
 }));
+
+if (typeof window !== 'undefined') {
+  useAuthStore.getState().checkAuth();
+}

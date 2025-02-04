@@ -11,7 +11,7 @@ export function MangaListItem({ manga }) {
 
         <div className="flex-shrink-0">
           <img
-            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${manga.imageUrl}`}
+            src={`${process.env.NEXT_PUBLIC_API_URL}${manga.imageUrl}`}
             alt={manga.title}
             className="w-[72px] h-[96px] object-cover rounded"
           />

@@ -23,8 +23,8 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
+    <div className="min-h-screen flex items-center justify-center bg-primary">
+      <div className="max-w-md w-full space-y-8 p-8 bg-secondary rounded-lg shadow">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
@@ -42,7 +42,7 @@ export default function LoginForm() {
                 Email address
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <div className="absolute z-20 inset-y-0 left-0 pl-3 flex items-center ">
                   <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
@@ -50,7 +50,7 @@ export default function LoginForm() {
                   name="email"
                   type="email"
                   required
-                  className="appearance-none rounded-lg relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-lg relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-tsecondary focus:border-tsecondary focus:z-10 sm:text-sm"
                   placeholder="Email address"
                   value={formData.email}
                   onChange={(e) =>
@@ -64,7 +64,7 @@ export default function LoginForm() {
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <div className="absolute z-20 inset-y-0 left-0 pl-3 flex items-center">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
@@ -72,7 +72,7 @@ export default function LoginForm() {
                   name="password"
                   type="password"
                   required
-                  className="appearance-none rounded-lg relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-lg relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-tsecondary focus:border-tsecondary focus:z-10 sm:text-sm"
                   placeholder="Password"
                   value={formData.password}
                   onChange={(e) =>
@@ -87,7 +87,7 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-tsecondary hover:bg-tprimary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tprimary disabled:bg-tsecondary"
             >
               {isLoading ? (
                 <Loader className="animate-spin h-5 w-5" />
@@ -100,7 +100,7 @@ export default function LoginForm() {
           <div className="text-sm text-center">
             <Link
               href="/register"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
+              className="font-medium text-tprimary hover:text-tsecondary"
             >
               Don't have an account? Sign up
             </Link>

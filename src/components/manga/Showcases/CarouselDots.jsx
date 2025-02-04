@@ -60,7 +60,7 @@ export function CarouselWithDots({ items }) {
             <div className="bg-[#2a2a2a] rounded-lg overflow-hidden">
               <div className="aspect-[3/4] relative">
                 <img
-                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${item.coverUrl}`}
+                  src={`${process.env.NEXT_PUBLIC_API_URL}${item.coverUrl}`}
                   alt={item.title}
                   className="w-full h-full object-cover"
                 />
