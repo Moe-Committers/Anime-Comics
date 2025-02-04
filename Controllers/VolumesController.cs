@@ -30,6 +30,9 @@ public class VolumesController : ControllerBase
         var query = new GetBookVolumesQuery
         {
             BookId = bookId,
+            Search = req.Search,
+            sort = req.sort,
+            IsAscending = req.IsAscending,
             Page = req.Page,
             PageSize = req.PageSize
         };
@@ -55,10 +58,15 @@ public class VolumesController : ControllerBase
     [HttpPost("book/{bookId}")]
     public async Task<ActionResult<ApiResponse<VolumeDto>>> AddVolume(
         long bookId,
-        [FromForm] AddVolumeCommand command)
+        [FromForm] AddVolumeCom command)
     {
-        var newCom = command with {
-            BookId = bookId
+        var newCom = new AddVolumeCommand {
+            BookId = bookId,
+            VolumeNo = command.VolumeNo,
+            Title = command.Title,
+            CoverImg = command.CoverImg,
+            ReleaseDate = command.ReleaseDate,
+            Description = command.Description
         };
         var volume = await _mediator.Send(newCom);
         return Ok(ResHelper.Success(volume));

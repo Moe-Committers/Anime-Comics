@@ -31,6 +31,9 @@ public class ChaptersController : ControllerBase
     {
         var query = new GetVolumeChaptersQuery
         {
+            Search = req.Search,
+            sort = req.sort,
+            IsAscending = req.IsAscending,
             VolumeId = volumeId,
             Page = req.Page,
             PageSize = req.PageSize

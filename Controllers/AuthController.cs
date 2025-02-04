@@ -6,7 +6,6 @@ using anime_comics.Features.Auth.Queries.GetUser;
 using anime_comics.Features.Auth.Queries.GetUsers;
 using anime_comics.Features.Auth.Commands.UpdateProfile;
 using anime_comics.Utils.Attributes;
-using anime_comics.Utils.DTOs;
 using anime_comics.Utils.DTOs.Authentication;
 using anime_comics.Utils.Enum;
 using MediatR;

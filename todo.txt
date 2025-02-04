@@ -1,5 +1,5 @@
-rating system
+fixing can not delete pages list long Id /// today
 
-checking the features
+add notification // tmrw
 
-/// soft delete feature coming soon
+do frontend "tmrw"

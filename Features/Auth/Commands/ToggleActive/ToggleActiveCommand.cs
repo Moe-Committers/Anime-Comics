@@ -7,3 +7,7 @@ public record ToggleActiveCommand : IRequest<UserDto>{
     public long Id {get; set;}
     public bool Toggle {get; set;}
 };
+
+public class ToggleActive {
+    public bool Toggle {get; set;}
+}

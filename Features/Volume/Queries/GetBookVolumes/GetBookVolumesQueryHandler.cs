@@ -23,6 +23,29 @@ public class GetBookVolumesQueryHandler : IRequestHandler<GetBookVolumesQuery, A
             .OrderBy(v => v.VolumeNo)
             .AsQueryable();
 
+        if (!string.IsNullOrEmpty(request.Search))
+        {
+            query = query.Where(v => v.Title.Contains(request.Search)
+            || v.VolumeNo == int.Parse(request.Search));
+        }
+
+        query = request.sort?.ToLower() switch
+        {
+            "volumeNo" => request.IsAscending
+                ? query.OrderBy(v => v.VolumeNo)
+                : query.OrderByDescending(v => v.VolumeNo),
+            "title" => request.IsAscending
+                ? query.OrderBy(v => v.Title)
+                : query.OrderByDescending(v => v.Title),
+            "releaseDate" => request.IsAscending
+                ? query.OrderBy(v => v.ReleaseDate)
+                : query.OrderByDescending(v => v.ReleaseDate),
+            "created" => request.IsAscending
+                ? query.OrderBy(b => b.CreatedAt)
+                : query.OrderByDescending(b => b.CreatedAt),
+            _ => query.OrderByDescending(b => b.CreatedAt)
+        };
+
         return await query.CreatePaginatedResponse<VolumeDto, Volumes>(
             request.Page,
             request.PageSize,

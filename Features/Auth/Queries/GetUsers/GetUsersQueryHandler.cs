@@ -35,6 +35,8 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, ApiResponse<L
             query = query.Where(u => u.Id == request.Id);
         }
 
+        query = query.Where(u => u.role != Role.Admin);
+
         if (request.FromDate.HasValue)
         {
             query = query.Where(u => u.CreatedAt >= request.FromDate);

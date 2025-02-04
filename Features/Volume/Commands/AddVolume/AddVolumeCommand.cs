@@ -12,3 +12,12 @@ public record AddVolumeCommand : IRequest<VolumeDto>
     public DateTime? ReleaseDate { get; init; }
     public string Description { get; init; }
 }
+
+public class AddVolumeCom
+{
+    public int VolumeNo { get; init; }
+    public string Title { get; init; }
+    public IFormFile? CoverImg { get; init; }
+    public DateTime? ReleaseDate { get; init; }
+    public string Description { get; init; }
+}
